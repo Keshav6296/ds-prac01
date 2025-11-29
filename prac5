@@ -1,0 +1,138 @@
+Q.5.Implement Queue as an ADT-
+
+#include <iostream>
+using namespace std;
+
+// Node structure
+struct Node {
+    int data;
+    Node* next;
+
+    Node(int x) {
+        data = x;
+        next = nullptr;
+    }
+};
+
+// Circular Linked List ADT
+class CircularLinkedList {
+private:
+    Node* tail;  // We keep a tail pointer for easy insertion & deletion
+
+public:
+    CircularLinkedList() {
+        tail = nullptr;
+    }
+
+    // ---------------------------------------------------
+    // 1. Insert an element x in the circular list
+    // ---------------------------------------------------
+    void insert(int x) {
+        Node* temp = new Node(x);
+
+        if (tail == nullptr) {  // Empty list
+            tail = temp;
+            tail->next = tail;  // Circular link
+        } 
+        else {
+            temp->next = tail->next; // Insert after tail->next (head position)
+            tail->next = temp;
+            tail = temp; // Update tail to new last node
+        }
+    }
+
+    // ---------------------------------------------------
+    // 2. Remove an element from the circular list
+    // ---------------------------------------------------
+    void remove(int x) {
+        if (tail == nullptr) {
+            cout << "List is empty\n";
+            return;
+        }
+
+        Node* curr = tail->next; // head
+        Node* prev = tail;
+
+        do {
+            if (curr->data == x) {
+                if (curr == tail && curr == tail->next) {
+                    // Only one element in the list
+                    tail = nullptr;
+                }
+                else {
+                    prev->next = curr->next;
+
+                    if (curr == tail)
+                        tail = prev;
+                }
+
+                delete curr;
+                return;
+            }
+
+            prev = curr;
+            curr = curr->next;
+
+        } while (curr != tail->next);
+
+        cout << "Element not found\n";
+    }
+
+    // ---------------------------------------------------
+    // 3. Search for an element x and return its pointer
+    // ---------------------------------------------------
+    Node* search(int x) {
+        if (tail == nullptr) return nullptr;
+
+        Node* curr = tail->next; // head
+
+        do {
+            if (curr->data == x)
+                return curr;
+            curr = curr->next;
+        } while (curr != tail->next);
+
+        return nullptr; // Not found
+    }
+
+    // Display the circular list
+    void display() {
+        if (tail == nullptr) {
+            cout << "List is empty\n";
+            return;
+        }
+
+        Node* curr = tail->next; // starting from head
+
+        do {
+            cout << curr->data << " ";
+            curr = curr->next;
+        } while (curr != tail->next);
+
+        cout << endl;
+    }
+};
+
+int main() {
+    CircularLinkedList cl;
+
+    cl.insert(10);
+    cl.insert(20);
+    cl.insert(30);
+    cl.insert(40);
+
+    cout << "Circular List: ";
+    cl.display();
+
+    cl.remove(20);
+    cout << "After removing 20: ";
+    cl.display();
+
+    Node* found = cl.search(30);
+    if (found)
+        cout << "Element 30 found at node: " << found << endl;
+    else
+        cout << "Element 30 not found\n";
+
+    return 0;
+}
