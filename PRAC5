@@ -1,0 +1,125 @@
+Q.5.Implement Queue as an ADT-
+
+#include <iostream>
+using namespace std;
+
+// -----------------------------------------------------
+// QUEUE ADT IMPLEMENTATION USING ARRAY
+// -----------------------------------------------------
+class Queue {
+private:
+    int arr[100];
+    int front, rear;
+
+public:
+    Queue() {
+        front = -1;
+        rear = -1;
+    }
+
+    bool isEmpty() {
+        return (front == -1 || front > rear);
+    }
+
+    bool isFull() {
+        return (rear == 99);
+    }
+
+    // Insert into queue (Enqueue)
+    void enqueue(int x) {
+        if (isFull()) {
+            cout << "Queue Overflow\n";
+            return;
+        }
+        if (front == -1)   // first element
+            front = 0;
+
+        arr[++rear] = x;
+        cout << x << " enqueued.\n";
+    }
+
+    // Remove from queue (Dequeue)
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Queue Underflow\n";
+            return -1;
+        }
+        int val = arr[front++];
+
+        // Reset queue when empty
+        if (front > rear)
+            front = rear = -1;
+
+        return val;
+    }
+
+    // Get front element
+    int peek() {
+        if (isEmpty()) {
+            cout << "Queue is empty\n";
+            return -1;
+        }
+        return arr[front];
+    }
+
+    // Display queue elements
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty\n";
+            return;
+        }
+        cout << "Queue: ";
+        for (int i = front; i <= rear; i++)
+            cout << arr[i] << " ";
+        cout << endl;
+    }
+};
+
+// -----------------------------------------------------
+// MAIN FUNCTION
+// -----------------------------------------------------
+int main() {
+    Queue q;
+    int choice, value;
+
+    while (true) {
+        cout << "\n--- QUEUE MENU ---\n";
+        cout << "1. Enqueue\n";
+        cout << "2. Dequeue\n";
+        cout << "3. Peek\n";
+        cout << "4. Display\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to enqueue: ";
+                cin >> value;
+                q.enqueue(value);
+                break;
+
+            case 2:
+                value = q.dequeue();
+                if (value != -1)
+                    cout << "Dequeued: " << value << endl;
+                break;
+
+            case 3:
+                value = q.peek();
+                if (value != -1)
+                    cout << "Front element: " << value << endl;
+                break;
+
+            case 4:
+                q.display();
+                break;
+
+            case 5:
+                return 0;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+    }
+}
