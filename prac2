@@ -1,0 +1,134 @@
+Q.2. a program to implement doubly linked list as an ADT that supports the following op:
+
+#include <iostream>
+using namespace std;
+
+// Node structure
+struct Node {
+    int data;
+    Node* prev;
+    Node* next;
+
+    Node(int x) {
+        data = x;
+        prev = nullptr;
+        next = nullptr;
+    }
+};
+
+// Doubly Linked List ADT
+class DoublyLinkedList {
+private:
+    Node* head;
+    Node* tail;
+
+public:
+    DoublyLinkedList() {
+        head = nullptr;
+        tail = nullptr;
+    }
+
+    // ---------------------------------------------------
+    // 1. Insert at the beginning
+    // ---------------------------------------------------
+    void insertAtBeginning(int x) {
+        Node* temp = new Node(x);
+
+        if (head == nullptr) { // List empty
+            head = tail = temp;
+        } else {
+            temp->next = head;
+            head->prev = temp;
+            head = temp;
+        }
+    }
+
+    // ---------------------------------------------------
+    // 2. Insert at the end
+    // ---------------------------------------------------
+    void insertAtEnd(int x) {
+        Node* temp = new Node(x);
+
+        if (tail == nullptr) { // List empty
+            head = tail = temp;
+        } else {
+            tail->next = temp;
+            temp->prev = tail;
+            tail = temp;
+        }
+    }
+
+    // ---------------------------------------------------
+    // 3. Remove from beginning
+    // ---------------------------------------------------
+    void removeFromBeginning() {
+        if (head == nullptr) {
+            cout << "List is empty\n";
+            return;
+        }
+
+        Node* temp = head;
+
+        if (head == tail) { 
+            head = tail = nullptr;
+        } else {
+            head = head->next;
+            head->prev = nullptr;
+        }
+
+        delete temp;
+    }
+
+    // ---------------------------------------------------
+    // 4. Remove from end
+    // ---------------------------------------------------
+    void removeFromEnd() {
+        if (tail == nullptr) {
+            cout << "List is empty\n";
+            return;
+        }
+
+        Node* temp = tail;
+
+        if (head == tail) {
+            head = tail = nullptr;
+        } else {
+            tail = tail->prev;
+            tail->next = nullptr;
+        }
+
+        delete temp;
+    }
+
+    // Display list forward
+    void display() {
+        Node* curr = head;
+        while (curr != nullptr) {
+            cout << curr->data << " ";
+            curr = curr->next;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    DoublyLinkedList list;
+
+    list.insertAtBeginning(10);
+    list.insertAtBeginning(20);
+    list.insertAtEnd(5);
+    list.insertAtEnd(1);
+
+    cout << "List after insertions: ";
+    list.display();
+
+    list.removeFromBeginning();
+    cout << "After removing from beginning: ";
+    list.display();
+
+    list.removeFromEnd();
+    cout << "After removing from end: ";
+    list.display();
+
+    return 0;
+}
