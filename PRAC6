@@ -1,0 +1,209 @@
+Q.6.Write a program to implement Binary Search Tree as an ADT which supports the following -
+
+#include <iostream>
+using namespace std;
+
+// ------------------------------------------------------
+// BST NODE
+// ------------------------------------------------------
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value) {
+        data = value;
+        left = right = nullptr;
+    }
+};
+
+// ------------------------------------------------------
+// BST CLASS (ADT)
+// ------------------------------------------------------
+class BST {
+private:
+    Node* root;
+
+    // Helper: Insert
+    Node* insertNode(Node* node, int x) {
+        if (node == nullptr)
+            return new Node(x);
+
+        if (x < node->data)
+            node->left = insertNode(node->left, x);
+        else if (x > node->data)
+            node->right = insertNode(node->right, x);
+
+        return node;
+    }
+
+    // Helper: Search
+    Node* searchNode(Node* node, int x) {
+        if (node == nullptr || node->data == x)
+            return node;
+
+        if (x < node->data)
+            return searchNode(node->left, x);
+        else
+            return searchNode(node->right, x);
+    }
+
+    // Helper: Find Minimum (for deletion)
+    Node* findMin(Node* node) {
+        while (node->left != nullptr)
+            node = node->left;
+        return node;
+    }
+
+    // Helper: Delete
+    Node* deleteNode(Node* node, int x) {
+        if (node == nullptr)
+            return node;
+
+        if (x < node->data)
+            node->left = deleteNode(node->left, x);
+
+        else if (x > node->data)
+            node->right = deleteNode(node->right, x);
+
+        else {  // element found
+
+            // Case 1: No child
+            if (node->left == nullptr && node->right == nullptr) {
+                delete node;
+                return nullptr;
+            }
+
+            // Case 2: One child
+            else if (node->left == nullptr) {
+                Node* temp = node->right;
+                delete node;
+                return temp;
+            }
+            else if (node->right == nullptr) {
+                Node* temp = node->left;
+                delete node;
+                return temp;
+            }
+
+            // Case 3: Two children
+            Node* temp = findMin(node->right);
+            node->data = temp->data;
+            node->right = deleteNode(node->right, temp->data);
+        }
+        return node;
+    }
+
+    // Traversals:
+    void inorder(Node* node) {
+        if (node != nullptr) {
+            inorder(node->left);
+            cout << node->data << " ";
+            inorder(node->right);
+        }
+    }
+
+    void preorder(Node* node) {
+        if (node != nullptr) {
+            cout << node->data << " ";
+            preorder(node->left);
+            preorder(node->right);
+        }
+    }
+
+    void postorder(Node* node) {
+        if (node != nullptr) {
+            postorder(node->left);
+            postorder(node->right);
+            cout << node->data << " ";
+        }
+    }
+
+public:
+    BST() {
+        root = nullptr;
+    }
+
+    // Public ADT Functions
+    void insert(int x) { root = insertNode(root, x); }
+
+    void deleteValue(int x) { root = deleteNode(root, x); }
+
+    bool search(int x) { return searchNode(root, x) != nullptr; }
+
+    void displayInorder() { inorder(root); }
+
+    void displayPreorder() { preorder(root); }
+
+    void displayPostorder() { postorder(root); }
+};
+
+// ------------------------------------------------------
+// MAIN PROGRAM
+// ------------------------------------------------------
+int main() {
+    BST tree;
+    int choice, value;
+
+    while (true) {
+        cout << "\n--- BINARY SEARCH TREE MENU ---\n";
+        cout << "1. Insert\n";
+        cout << "2. Delete\n";
+        cout << "3. Search\n";
+        cout << "4. Inorder Traversal\n";
+        cout << "5. Preorder Traversal\n";
+        cout << "6. Postorder Traversal\n";
+        cout << "7. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+
+            case 1:
+                cout << "Enter element to insert: ";
+                cin >> value;
+                tree.insert(value);
+                break;
+
+            case 2:
+                cout << "Enter element to delete: ";
+                cin >> value;
+                tree.deleteValue(value);
+                break;
+
+            case 3:
+                cout << "Enter element to search: ";
+                cin >> value;
+                if (tree.search(value))
+                    cout << "Element found.\n";
+                else
+                    cout << "Element not found.\n";
+                break;
+
+            case 4:
+                cout << "Inorder Traversal: ";
+                tree.displayInorder();
+                cout << endl;
+                break;
+
+            case 5:
+                cout << "Preorder Traversal: ";
+                tree.displayPreorder();
+                cout << endl;
+                break;
+
+            case 6:
+                cout << "Postorder Traversal: ";
+                tree.displayPostorder();
+                cout << endl;
+                break;
+
+            case 7:
+                return 0;
+
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+    }
+}
