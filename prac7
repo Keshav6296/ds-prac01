@@ -1,0 +1,204 @@
+implement insert and search operation AVL TREES
+
+#include <iostream>
+using namespace std;
+
+// ---------------------------------------------------------
+// AVL TREE NODE
+// ---------------------------------------------------------
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    int height;
+
+    Node(int value) {
+        data = value;
+        left = right = nullptr;
+        height = 1;
+    }
+};
+
+// ---------------------------------------------------------
+// AVL TREE CLASS
+// ---------------------------------------------------------
+class AVL {
+private:
+    Node* root;
+
+    // Get height
+    int getHeight(Node* node) {
+        if (node == nullptr) return 0;
+        return node->height;
+    }
+
+    // Get balance factor
+    int getBalance(Node* node) {
+        if (node == nullptr) return 0;
+        return getHeight(node->left) - getHeight(node->right);
+    }
+
+    // Right rotate
+    Node* rightRotate(Node* y) {
+        Node* x = y->left;
+        Node* T2 = x->right;
+
+        // Perform rotation
+        x->right = y;
+        y->left = T2;
+
+        // Update heights
+        y->height = 1 + max(getHeight(y->left), getHeight(y->right));
+        x->height = 1 + max(getHeight(x->left), getHeight(x->right));
+
+        return x;
+    }
+
+    // Left rotate
+    Node* leftRotate(Node* x) {
+        Node* y = x->right;
+        Node* T2 = y->left;
+
+        // Perform rotation
+        y->left = x;
+        x->right = T2;
+
+        // Update heights
+        x->height = 1 + max(getHeight(x->left), getHeight(x->right));
+        y->height = 1 + max(getHeight(y->left), getHeight(y->right));
+
+        return y;
+    }
+
+    // Insert node (with balancing)
+    Node* insertNode(Node* node, int key) {
+        if (node == nullptr)
+            return new Node(key);
+
+        if (key < node->data)
+            node->left = insertNode(node->left, key);
+        else if (key > node->data)
+            node->right = insertNode(node->right, key);
+        else
+            return node; // duplicates not allowed
+
+        // Update height
+        node->height = 1 + max(getHeight(node->left), getHeight(node->right));
+
+        // Check balance
+        int balance = getBalance(node);
+
+        // Left Left Case
+        if (balance > 1 && key < node->left->data)
+            return rightRotate(node);
+
+        // Right Right Case
+        if (balance < -1 && key > node->right->data)
+            return leftRotate(node);
+
+        // Left Right Case
+        if (balance > 1 && key > node->left->data) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Right Left Case
+        if (balance < -1 && key < node->right->data) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
+    }
+
+    // Search operation
+    bool searchNode(Node* node, int key) {
+        if (node == nullptr)
+            return false;
+
+        if (key == node->data)
+            return true;
+
+        if (key < node->data)
+            return searchNode(node->left, key);
+        else
+            return searchNode(node->right, key);
+    }
+
+    // inorder display
+    void inorderDisplay(Node* node) {
+        if (node != nullptr) {
+            inorderDisplay(node->left);
+            cout << node->data << " ";
+            inorderDisplay(node->right);
+        }
+    }
+
+public:
+    AVL() {
+        root = nullptr;
+    }
+
+    void insert(int key) {
+        root = insertNode(root, key);
+    }
+
+    bool search(int key) {
+        return searchNode(root, key);
+    }
+
+    void displayInorder() {
+        inorderDisplay(root);
+    }
+};
+
+// ---------------------------------------------------------
+// MAIN FUNCTION
+// ---------------------------------------------------------
+int main() {
+    AVL avl;
+    int choice, value;
+
+    while (true) {
+        cout << "\n--- AVL TREE MENU ---\n";
+        cout << "1. Insert\n";
+        cout << "2. Search\n";
+        cout << "3. Display Inorder\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                avl.insert(value);
+                cout << "Inserted.\n";
+                break;
+
+            case 2:
+                cout << "Enter value to search: ";
+                cin >> value;
+                if (avl.search(value))
+                    cout << "Element found.\n";
+                else
+                    cout << "Element not found.\n";
+                break;
+
+            case 3:
+                cout << "Inorder Traversal: ";
+                avl.displayInorder();
+                cout << endl;
+                break;
+
+            case 4:
+                return 0;
+
+            default:
+                cout << "Invalid choice.\n";
+        }
+    }
+
+    return 0;
+}
